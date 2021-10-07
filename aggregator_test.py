@@ -17,53 +17,47 @@ class AggregatorTest(unittest.TestCase):
         """"setUp creates the test dataset with valid data"""
 
         # Activity logs
-        # TODO: Add more entries, add student with no entries and zero on grades
         df = pd.DataFrame(
             {
                 'Hora': [
-                    '"01/01/2001 10:00"',
-                    '"01/01/2001 11:00"',
-                    '"01/01/2001 12:00"',
+                    '01/01/2001 10:00',
+                    '01/01/2001 11:00',
+                    '01/01/2001 12:00',
+                    '01/01/2001 13:00',
+                    '01/01/2001 14:00',
+                    '01/01/2001 15:00',
                 ],
-                '"Nome completo"': [
-                    '"Test name 1"',
-                    '"Test name 2"',
-                    'Administrador Moodle'
-                ],
-                '"Usuário afetado"': [
-                    '-',
-                    '"Test name 2"',
-                    '-'
+                'Nome completo': [
+                    'Test name 1',
+                    'Test name 2',
+                    'Administrador Moodle',
+                    'Test name 3',
+                    'Test name 2',
+                    'Test name 1'
                 ],
                 '"Contexto do Evento"': [
-                    '"Test course 1"',
-                    '"Test course 1"',
-                    '"Test course 2"'
+                    'Test course 1',
+                    'Test course 1',
+                    'Test course 2',
+                    'Test course 1',
+                    'Test course 1',
+                    'Test course 2'
                 ],
                 'Componente': [
                     'Tarefa',
                     'Tarefa',
-                    'Lixeira'
+                    'Lixeira',
+                    'Tarefa',
+                    'Fórum',
+                    'Fórum'
                 ],
                 '"Nome do evento"': [
-                    '"O status da submissão foi visualizado."',
-                    '"Comentário visualizado"',
-                    'Item excluído'
-                ],
-                'Descrição': [
-                    '''"The user with id '123456' has viewed the submission status page for the assignment with course module id '000000'."''',
-                    '''"The user with id '654321' viewed the feedback for the user with id '654321' for the assignment with course module id '000000'."''',
-                    '''Item com ID 192837 foi excluído.'''
-                ],
-                'Origem': [
-                    'test_origin',
-                    'test_origin2',
-                    'cli'
-                ],
-                'endereço IP': [
-                    '0.0.0.0',
-                    '0.0.0.1',
-                    ''
+                    'O status da submissão foi visualizado.',
+                    'Comentário visualizado',
+                    'Item excluído',
+                    'Curso visto',
+                    'Post criado',
+                    'Discussão visualizada'
                 ],
             }
         )
@@ -78,27 +72,32 @@ class AggregatorTest(unittest.TestCase):
                 'Nome completo': [
                     'Test name 1',
                     'Test name 2',
-                    'Test name 3'
+                    'Test name 3',
+                    'Test name 4'
                 ],
                 'Tarefa 1': [
                     '10',
                     '20',
-                    '30'
+                    '30',
+                    '0'
                 ],
                 'Tarefa 2': [
                     '40',
                     '50',
-                    '60'
+                    '60',
+                    '0'
                 ],
                 'Tarefa 3': [
                     '70',
                     '80',
-                    '90'
+                    '90',
+                    '0'
                 ],
                 'Total do curso (Real)': [
                     '50',
                     '50',
-                    '50'
+                    '50',
+                    '0'
                 ],
             }
         )
