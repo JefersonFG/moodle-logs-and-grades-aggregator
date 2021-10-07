@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 import unittest
+from datetime import datetime
 
 import pandas as pd
 
@@ -22,7 +23,7 @@ class AggregatorTest(unittest.TestCase):
         df = pd.DataFrame(
             {
                 'Hora': [
-                    '01/01/2001 10:00',
+                    '01/02/2001 10:00',
                     '01/01/2001 11:00',
                     '01/01/2001 12:00',
                     '01/01/2001 13:00',
@@ -158,6 +159,24 @@ class AggregatorTest(unittest.TestCase):
                         for key, value in interaction.items():
                             self.assertTrue(isinstance(key, str))
                             self.assertTrue(isinstance(value, str))
+
+    def test_interactions_in_timeline(self):
+        """Tests that students interactions are sorted in ascending time, so a timeline of events can be created"""
+        aggregator.aggregate_data(self.test_logs_path, self.test_grades_path, self.test_results_path)
+        with os.scandir(self.test_results_path) as scan_object:
+            for entry in scan_object:
+                with open(os.path.join(self.test_results_path, entry.name), 'r') as file:
+                    file_content = file.read()
+                content_json = json.loads(file_content)
+
+                # Check for interactions, which may be missing if student didn't interact with moodle
+                if student_data.student_interactions in content_json:
+                    previous_time = ""
+                    for interaction in content_json[student_data.student_interactions]:
+                        current_time = datetime.strptime(interaction[aggregator.hour_column], "%d/%m/%Y %H:%M")
+                        if previous_time != "":
+                            self.assertGreater(current_time, previous_time)
+                        previous_time = current_time
 
 
 if __name__ == '__main__':

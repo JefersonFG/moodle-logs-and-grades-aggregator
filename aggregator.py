@@ -8,6 +8,7 @@ from student_data import StudentData
 # Column names for the logs and grades files
 complete_name_column = 'Nome completo'
 final_grade_column = 'Total do curso (Real)'
+hour_column = 'Hora'
 
 
 # Main aggregation function
@@ -20,9 +21,12 @@ def aggregate_data(logs_path, grades_path, target_path) -> None:
         raise Exception("Target path is not a directory")
 
     # Reads student data from input files
-    # TODO: Sort by time
     logs_df = pd.read_csv(logs_path)
     grades_df = pd.read_excel(grades_path)
+
+    # Sort log entries by their ascending time
+    logs_df.sort_values(by=hour_column, key=lambda col: pd.to_datetime(col, dayfirst=True),
+                        inplace=True, ascending=True)
 
     # Groups all entries by student name
     grouped_student_logs = logs_df.groupby(complete_name_column)
