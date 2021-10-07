@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 import shutil
 import unittest
@@ -6,6 +7,7 @@ import unittest
 import pandas as pd
 
 import aggregator
+import student_data
 
 
 class AggregatorTest(unittest.TestCase):
@@ -117,7 +119,45 @@ class AggregatorTest(unittest.TestCase):
     def test_create_results(self):
         """Tests that results are written to the disk, but doesn't validate their contents"""
         aggregator.aggregate_data(self.test_logs_path, self.test_grades_path, self.test_results_path)
-        self.assertTrue(any(os.scandir(self.test_results_path)))
+        with os.scandir(self.test_results_path) as scan_object:
+            self.assertTrue(any(scan_object), "no file created on the results folder")
+
+    def test_main_metadata(self):
+        """Tests that the main metadata of the student trajectory is present on the resulting jsons"""
+        aggregator.aggregate_data(self.test_logs_path, self.test_grades_path, self.test_results_path)
+        with os.scandir(self.test_results_path) as scan_object:
+            for entry in scan_object:
+                with open(os.path.join(self.test_results_path, entry.name), 'r') as file:
+                    file_content = file.read()
+                content_json = json.loads(file_content)
+
+                # Checks for name and final grade
+                self.assertIn(student_data.student_name, content_json)
+                self.assertIn(student_data.student_final_grade, content_json)
+
+    def test_grades_and_interactions(self):
+        """Tests that grades are present for the student and validates interactions if present (may not be)"""
+        aggregator.aggregate_data(self.test_logs_path, self.test_grades_path, self.test_results_path)
+        with os.scandir(self.test_results_path) as scan_object:
+            for entry in scan_object:
+                with open(os.path.join(self.test_results_path, entry.name), 'r') as file:
+                    file_content = file.read()
+                content_json = json.loads(file_content)
+
+                # Checks for a dictionary of grades, must be present
+                self.assertIn(student_data.student_grades, content_json)
+                self.assertTrue(isinstance(content_json[student_data.student_grades], dict))
+                for key, value in content_json[student_data.student_grades].items():
+                    self.assertTrue(isinstance(key, str))
+                    self.assertTrue(isinstance(value, int))
+
+                # Check for interactions, which may be missing if student didn't interact with moodle
+                if student_data.student_interactions in content_json:
+                    self.assertTrue(isinstance(content_json[student_data.student_interactions], list))
+                    for interaction in content_json[student_data.student_interactions]:
+                        for key, value in interaction.items():
+                            self.assertTrue(isinstance(key, str))
+                            self.assertTrue(isinstance(value, str))
 
 
 if __name__ == '__main__':
