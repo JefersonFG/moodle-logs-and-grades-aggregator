@@ -41,7 +41,7 @@ def aggregate_data(logs_path, grades_path, target_path) -> None:
 
         # Since grades have one entry for each student we can just get the data at the first index
         current_student = StudentData(student_info[complete_name_column].iat[0],
-                                      int(student_info[final_grade_column].iat[0]))
+                                      student_info[final_grade_column].iat[0])
 
         # Convert the df to a dictionary removing the indexes, creating a map of column to row
         current_student.grades = student_info.to_dict('records')[0]

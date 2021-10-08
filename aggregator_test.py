@@ -80,27 +80,27 @@ class AggregatorTest(unittest.TestCase):
                 ],
                 'Tarefa 1': [
                     '10',
-                    '20',
+                    '-',
                     '30',
-                    '0'
+                    '-'
                 ],
                 'Tarefa 2': [
                     '40',
                     '50',
                     '60',
-                    '0'
+                    '-'
                 ],
                 'Tarefa 3': [
                     '70',
                     '80',
                     '90',
-                    '0'
+                    '-'
                 ],
                 'Total do curso (Real)': [
                     '50',
                     '50',
                     '50',
-                    '0'
+                    '-'
                 ],
             }
         )
@@ -150,7 +150,7 @@ class AggregatorTest(unittest.TestCase):
                 self.assertTrue(isinstance(content_json[student_data.student_grades], dict))
                 for key, value in content_json[student_data.student_grades].items():
                     self.assertTrue(isinstance(key, str))
-                    self.assertTrue(isinstance(value, int))
+                    self.assertTrue(value.isdigit() or value == '-')
 
                 # Check for interactions, which may be missing if student didn't interact with moodle
                 if student_data.student_interactions in content_json:
