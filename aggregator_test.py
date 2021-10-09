@@ -16,6 +16,34 @@ class AggregatorTest(unittest.TestCase):
     test_grades_path = 'test_grades.xlsx'
     test_results_path = 'test_results'
 
+    # Expected metadata for each test student included in the test dataset
+    test_student_expected_metadata = [
+        {
+            student_data.student_name: "Test name 1",
+            student_data.student_final_grade: '50',
+            student_data.student_forum_interactions: 1,
+            student_data.student_total_moodle_interactions: 2
+        },
+        {
+            student_data.student_name: "Test name 2",
+            student_data.student_final_grade: '70',
+            student_data.student_forum_interactions: 1,
+            student_data.student_total_moodle_interactions: 2
+        },
+        {
+            student_data.student_name: "Test name 3",
+            student_data.student_final_grade: '80',
+            student_data.student_forum_interactions: 0,
+            student_data.student_total_moodle_interactions: 2
+        },
+        {
+            student_data.student_name: "Test name 4",
+            student_data.student_final_grade: '-',
+            student_data.student_forum_interactions: 0,
+            student_data.student_total_moodle_interactions: 0
+        }
+    ]
+
     def setUp(self):
         """"setUp creates the test dataset with valid data"""
 
@@ -98,8 +126,8 @@ class AggregatorTest(unittest.TestCase):
                 ],
                 'Total do curso (Real)': [
                     '50',
-                    '50',
-                    '50',
+                    '70',
+                    '80',
                     '-'
                 ],
             }
@@ -126,6 +154,7 @@ class AggregatorTest(unittest.TestCase):
     def test_main_metadata(self):
         """Tests that the main metadata of the student trajectory is present on the resulting jsons"""
         aggregator.aggregate_data(self.test_logs_path, self.test_grades_path, self.test_results_path)
+        current_student_index = 0
         with os.scandir(self.test_results_path) as scan_object:
             for entry in scan_object:
                 with open(os.path.join(self.test_results_path, entry.name), 'r') as file:
@@ -135,6 +164,22 @@ class AggregatorTest(unittest.TestCase):
                 # Checks for name and final grade
                 self.assertIn(student_data.student_name, content_json)
                 self.assertIn(student_data.student_final_grade, content_json)
+
+                # Check for number of interactions on the forum and total interactions with moodle
+                self.assertIn(student_data.student_forum_interactions, content_json)
+                self.assertIn(student_data.student_total_moodle_interactions, content_json)
+
+                # Check their values
+                expected_student_info = self.test_student_expected_metadata[current_student_index]
+                current_student_index += 1
+                self.assertEqual(content_json[student_data.student_name],
+                                 expected_student_info[student_data.student_name])
+                self.assertEqual(content_json[student_data.student_final_grade],
+                                 expected_student_info[student_data.student_final_grade])
+                self.assertEqual(content_json[student_data.student_forum_interactions],
+                                 expected_student_info[student_data.student_forum_interactions])
+                self.assertEqual(content_json[student_data.student_total_moodle_interactions],
+                                 expected_student_info[student_data.student_total_moodle_interactions])
 
     def test_grades_and_interactions(self):
         """Tests that grades are present for the student and validates interactions if present (may not be)"""

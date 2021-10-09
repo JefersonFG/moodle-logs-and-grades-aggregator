@@ -9,6 +9,10 @@ from student_data import StudentData
 complete_name_column = 'Nome completo'
 final_grade_column = 'Total do curso (Real)'
 hour_column = 'Hora'
+component_column = 'Componente'
+
+# Relevant entries on the logs for filtering
+forum_component = 'Fórum'
 
 
 # Main aggregation function
@@ -71,6 +75,10 @@ def aggregate_data(logs_path, grades_path, target_path) -> None:
         # Remove full name from internal interactions as well
         for interaction in current_student.interactions:
             del interaction[complete_name_column]
+
+        # Save metadata about the interactions
+        current_student.forum_interactions = len(student_info[component_column] == forum_component)
+        current_student.total_moodle_interactions = len(student_info.index)
 
     # Save student info on the target folder
     for _, student in students.items():
