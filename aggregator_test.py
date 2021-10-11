@@ -34,7 +34,7 @@ class AggregatorTest(unittest.TestCase):
             student_data.student_name: "Test name 3",
             student_data.student_final_grade: '80',
             student_data.student_forum_interactions: 0,
-            student_data.student_total_moodle_interactions: 2
+            student_data.student_total_moodle_interactions: 1
         },
         {
             student_data.student_name: "Test name 4",
@@ -169,17 +169,22 @@ class AggregatorTest(unittest.TestCase):
                 self.assertIn(student_data.student_forum_interactions, content_json)
                 self.assertIn(student_data.student_total_moodle_interactions, content_json)
 
+                # List of metadata keys for easy traversing
+                student_metadata_keys = [
+                    student_data.student_name,
+                    student_data.student_final_grade,
+                    student_data.student_forum_interactions,
+                    student_data.student_total_moodle_interactions
+                ]
+
                 # Check their values
                 expected_student_info = self.test_student_expected_metadata[current_student_index]
                 current_student_index += 1
-                self.assertEqual(content_json[student_data.student_name],
-                                 expected_student_info[student_data.student_name])
-                self.assertEqual(content_json[student_data.student_final_grade],
-                                 expected_student_info[student_data.student_final_grade])
-                self.assertEqual(content_json[student_data.student_forum_interactions],
-                                 expected_student_info[student_data.student_forum_interactions])
-                self.assertEqual(content_json[student_data.student_total_moodle_interactions],
-                                 expected_student_info[student_data.student_total_moodle_interactions])
+
+                for metadata in student_metadata_keys:
+                    self.assertEqual(expected_student_info[metadata],
+                                     content_json[metadata],
+                                     f"student {content_json[student_data.student_name]} has wrong {metadata} value")
 
     def test_grades_and_interactions(self):
         """Tests that grades are present for the student and validates interactions if present (may not be)"""

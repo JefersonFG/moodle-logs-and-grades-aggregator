@@ -77,7 +77,7 @@ def aggregate_data(logs_path, grades_path, target_path) -> None:
             del interaction[complete_name_column]
 
         # Save metadata about the interactions
-        current_student.forum_interactions = len(student_info[component_column] == forum_component)
+        current_student.forum_interactions = len(student_info[student_info[component_column] == forum_component].index)
         current_student.total_moodle_interactions = len(student_info.index)
 
     # Save student info on the target folder
